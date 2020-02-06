@@ -1,0 +1,1 @@
+from gym_promotions.envs.promotions_env import PromotionsEnv
