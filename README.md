@@ -7,7 +7,10 @@ For more info on the OpenAi gyms look here: [OpenAi gym](https://github.com/open
 And for getting started, have a look here: [Getting started with gym](http://gym.openai.com/docs/)
 
 ### Install
+clone this repository, and in the root run the following command:
+```shell script
 pip install -e gym-promotions
+```
 
 ### Code
 
