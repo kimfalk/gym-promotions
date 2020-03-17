@@ -1,0 +1,2 @@
+from gym_promotions.envs.promotions_env import PromotionsEnv
+from gym_promotions.envs.promotions_probabilistic_env import PromotionsProbabilisticEnv
