@@ -18,8 +18,10 @@ class PromotionsProbabilisticEnv(gym.Env):
         self.max_steps = max_steps
         if data is None:
             data = self.get_test_data()
+        self.reward_ratio = data.optimal_reward
         self.data = data
         self.current_step = 0
+        self.total_steps = 0
         self.clicks = 0
         self.promotions_shown = defaultdict(int)
         self.promotions_clicked = defaultdict(int)
@@ -34,18 +36,21 @@ class PromotionsProbabilisticEnv(gym.Env):
         # send the promotion to the user
         pass
 
+    def optimal_reward(self):
+        return self.reward_ratio * self.max_steps
+
     def step(self, action):
 
         self._take_action(action)
 
         self.current_step += 1
-
-        reward = self.data.clicked(self.state, action)
+        self.total_steps += 1
+        reward = self.data.clicked(self.state, action, self.total_steps)
 
         self.promotions_shown[action] += 1
         self.promotions_clicked[action] += reward
         # This allows the state also to contain knowledge of which promotions are seen, and whether they clicked.
-        # currently the click is not stocastic so this will work
+        # currently the click is not stochastic so this will work
         # todo: show an average value of clicks.
         self.seen_promotions[self.state[0]['user_id']][action] = reward + 1
         self.clicks += reward
@@ -82,22 +87,22 @@ class PromotionsProbabilisticEnv(gym.Env):
         pass
 
     def get_test_data(self):
-        users = [{'user_id': 1, 'age': 30, 'children': 0}, \
-                 {'user_id': 2, 'age': 31, 'children': 1}, \
-                 {'user_id': 3, 'age': 32, 'children': 1}, \
-                 {'user_id': 4, 'age': 33, 'children': 0}, \
-                 {'user_id': 1, 'age': 20, 'children': 0}, \
-                 {'user_id': 2, 'age': 24, 'children': 1}, \
-                 {'user_id': 3, 'age': 29, 'children': 1}, \
-                 {'user_id': 4, 'age': 30, 'children': 0}, \
-                 {'user_id': 5, 'age': 41, 'children': 0}, \
-                 {'user_id': 6, 'age': 45, 'children': 3}, \
-                 {'user_id': 7, 'age': 44, 'children': 0}, \
-                 {'user_id': 8, 'age': 46, 'children': 1}, \
-                 {'user_id': 5, 'age': 50, 'children': 0}, \
-                 {'user_id': 6, 'age': 45, 'children': 4}, \
-                 {'user_id': 7, 'age': 47, 'children': 0}, \
-                 {'user_id': 8, 'age': 49, 'children': 2}, \
+        users = [{'user_id': 1, 'age': 30, 'children': 0},\
+                 {'user_id': 2, 'age': 31, 'children': 1},\
+                 {'user_id': 3, 'age': 32, 'children': 1},\
+                 {'user_id': 4, 'age': 33, 'children': 0},\
+                 {'user_id': 1, 'age': 20, 'children': 0},\
+                 {'user_id': 2, 'age': 24, 'children': 1},\
+                 {'user_id': 3, 'age': 29, 'children': 1},\
+                 {'user_id': 4, 'age': 30, 'children': 0},\
+                 {'user_id': 5, 'age': 41, 'children': 0},\
+                 {'user_id': 6, 'age': 45, 'children': 3},\
+                 {'user_id': 7, 'age': 44, 'children': 0},\
+                 {'user_id': 8, 'age': 46, 'children': 1},\
+                 {'user_id': 5, 'age': 50, 'children': 0},\
+                 {'user_id': 6, 'age': 45, 'children': 4},\
+                 {'user_id': 7, 'age': 47, 'children': 0},\
+                 {'user_id': 8, 'age': 49, 'children': 2},\
  \
                  ]
 
@@ -120,6 +125,10 @@ class Data:
         self.promotions = promotions
 
     @property
+    def optimal_reward(self):
+        return 0.20
+
+    @property
     def n_users(self):
         return len(self.users)
 
@@ -127,19 +136,32 @@ class Data:
     def n_promotions(self):
         return len(self.promotions)
 
-    def clicked(self, state, promotion_id):
+    def clicked(self, state, promotion_id, step):
+        change_step = 100000
+
         user = state[0]
         n = random.random()
         if user['age'] > 40:
             if user['children'] > 0:
-                promotion_probabilities = [0.2, 0.05, 0.1, 0.1, 0.2, 0.02]
+                if step < change_step:
+                    promotion_probabilities = [0.2, 0.05, 0.1, 0.1, 0.2, 0.02]
+                else:
+                    promotion_probabilities = [0.02, 0.5, 0.01, 0.01, 0.02, 0.2]
+
                 return n < promotion_probabilities[promotion_id]
             elif user['children'] == 0:
-                promotion_probabilities = [0.01, 0.05, 0.02, 0.1, 0.3, 0.02]
+                if step < change_step:
+                    promotion_probabilities = [0.01, 0.05, 0.02, 0.1, 0.3, 0.02]
+                else:
+                    promotion_probabilities = [0.01, 0.05, 0.2, 0.1, 0.03, 0.02]
+
                 return n < promotion_probabilities[promotion_id]
         if user['age'] <= 40:
             if user['children'] > 0:
-                promotion_probabilities = [0.2, 0.05, 0.01, 0.01, 0.02, 0.02]
+                if step < change_step:
+                    promotion_probabilities = [0.2, 0.5, 0.01, 0.01, 0.02, 0.02]
+                else:
+                    promotion_probabilities = [0.02, 0.05, 0.01, 0.1, 0.02, 0.02]
                 return n < promotion_probabilities[promotion_id]
             else:
                 promotion_probabilities = [0.05, 0.2, 0.01, 0.01, 0.1, 0.02]
