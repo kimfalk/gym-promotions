@@ -137,7 +137,7 @@ class Data:
         return len(self.promotions)
 
     def clicked(self, state, promotion_id, step):
-        change_step = 100000
+        change_step = 200000
 
         user = state[0]
         n = random.random()
