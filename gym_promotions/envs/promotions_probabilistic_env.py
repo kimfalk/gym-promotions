@@ -105,17 +105,20 @@ class PromotionsProbabilisticEnv(gym.Env):
                  {'user_id': 8, 'age': 49, 'children': 2},\
  \
                  ]
+        PROMOTION_MAP = {"no discount": 0,
+                         "5% on x": 1,
+                         "10% on y": 2,
+                         "10% on x": 3,
+                         "5% on y": 4,
+                         "free coffee": 5,
+                         "free transport": 6,
+                         "buy one get one for free": 7,
+                         "new arrival": 8,
+                         "things for the garden": 9,
+                         "things for the kitchen": 10
+                         }
 
-        promotions = [ \
-            0,  # promotion
-            1,  # product update
-            2,  # 3% discount
-            3,  # 5% discount
-            4,  # 10% discount
-            5,  # 20% discount
-        ]
-
-        return Data(users, promotions)
+        return Data(users, PROMOTION_MAP)
 
 
 class Data:
@@ -144,25 +147,25 @@ class Data:
         if user['age'] > 40:
             if user['children'] > 0:
                 if step < change_step:
-                    promotion_probabilities = [0.2, 0.05, 0.1, 0.1, 0.2, 0.02]
+                    promotion_probabilities = [0.2, 0.05, 0.1, 0.1, 0.2, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02]
                 else:
-                    promotion_probabilities = [0.02, 0.5, 0.01, 0.01, 0.02, 0.2]
+                    promotion_probabilities = [0.02, 0.5, 0.01, 0.01, 0.02, 0.2, 0.02, 0.02, 0.02, 0.02, 0.02]
 
                 return n < promotion_probabilities[promotion_id]
             elif user['children'] == 0:
                 if step < change_step:
-                    promotion_probabilities = [0.01, 0.05, 0.02, 0.1, 0.3, 0.02]
+                    promotion_probabilities = [0.01, 0.05, 0.02, 0.1, 0.3, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02]
                 else:
-                    promotion_probabilities = [0.01, 0.05, 0.2, 0.1, 0.03, 0.02]
+                    promotion_probabilities = [0.01, 0.05, 0.2, 0.1, 0.03, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02]
 
                 return n < promotion_probabilities[promotion_id]
         if user['age'] <= 40:
             if user['children'] > 0:
                 if step < change_step:
-                    promotion_probabilities = [0.2, 0.5, 0.01, 0.01, 0.02, 0.02]
+                    promotion_probabilities = [0.2, 0.5, 0.01, 0.01, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02]
                 else:
-                    promotion_probabilities = [0.02, 0.05, 0.01, 0.1, 0.02, 0.02]
+                    promotion_probabilities = [0.02, 0.05, 0.01, 0.1, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02]
                 return n < promotion_probabilities[promotion_id]
             else:
-                promotion_probabilities = [0.05, 0.2, 0.01, 0.01, 0.1, 0.02]
+                promotion_probabilities = [0.05, 0.2, 0.01, 0.01, 0.1, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02]
                 return n < promotion_probabilities[promotion_id]

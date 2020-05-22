@@ -9,12 +9,10 @@ from gym_promotions.envs.promotions_env import Data
 
 
 def get_test_data():
-    users = [{'user_id': 1, 'age': 45, 'children': 0}, \
-             {'user_id': 2, 'age': 35, 'children': 1}, \
-             ]
+    users = [{'user_id': 1, 'age': 45, 'children': 0},
+             {'user_id': 2, 'age': 35, 'children': 1}]
 
-    promotions = [ \
-        1,2,3]
+    promotions = [1, 2, 3]
 
     return Data(users, promotions)
 
@@ -30,7 +28,6 @@ def test_Q_learning_agent():
     agent.q_learning(100)
     user1_q = agent.Q[freeze_user(data.users[0])]
     user2_q = agent.Q[freeze_user(data.users[1])]
-
 
     assert user2_q[0] < user2_q[1]
     assert user2_q[2] < user2_q[1]
