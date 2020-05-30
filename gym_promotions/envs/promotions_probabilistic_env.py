@@ -45,7 +45,9 @@ class PromotionsProbabilisticEnv(gym.Env):
 
         self.current_step += 1
         self.total_steps += 1
-        reward = self.data.clicked(self.state, action, self.total_steps)
+        clicked = self.data.clicked(self.state, action, self.total_steps)
+
+        reward = 1. if clicked else 0.
 
         self.promotions_shown[action] += 1
         self.promotions_clicked[action] += reward
