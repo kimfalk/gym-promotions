@@ -17,7 +17,7 @@ def get_test_data():
     return Data(users, promotions)
 
 
-def test_Q_learning_agent():
+def x_test_Q_learning_agent():
 
     data = get_test_data()
     env = PromotionsEnv(data)
