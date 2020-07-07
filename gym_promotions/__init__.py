@@ -8,3 +8,7 @@ register(
     id='promotions-probabilistic-v0',
     entry_point='gym_promotions.envs:PromotionsProbabilisticEnv',
 )
+register(
+    id='promotions-probabilistic-space-v0',
+    entry_point='gym_promotions.envs:PromotionsProbabilisticFromSpaceEnv',
+)

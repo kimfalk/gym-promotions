@@ -3,7 +3,7 @@ import gym
 from agents.q_learning_agent import QLearningAgent
 
 
-class User():
+class User:
     def __init__(self, user_id=0, age=0, children=0):
         self.user_id = user_id
         self.age = age
